@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import logo from '../assets/logo.png';
+// import logo from '../assets/logo.png';
 import { useTheme } from '@/context/theme-provider';
 import { Moon, Sun } from 'lucide-react';
+import CitySearch from './CitySearch';
+import logo from '../assets/weather-app.png';
 
 const Header = () => {
     const { theme, setTheme } = useTheme();
@@ -12,9 +14,8 @@ const Header = () => {
                 <Link to={'/'}>
                     <img src={logo} alt="logo" className="h-28" />
                 </Link>
-                <div>
-                    {/* search  */}
-                    {/* theme toggle */}
+                <div className='flex gap-10'>
+                    <CitySearch/>
                     <div
                         onClick={() => setTheme(isDark ? 'light' : 'dark')}
                         className={`flex items-center cursor-pointer transition-transform duration-500 ${

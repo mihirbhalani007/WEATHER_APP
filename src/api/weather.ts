@@ -26,7 +26,7 @@ const geoClient = axios.create({
 
 geoClient.interceptors.request.use((config) => {
     config.params = {
-        ...API_CONFIG.API_KEY,
+        appid: API_CONFIG.API_KEY,
         ...config.params,
     };
     return config;
@@ -52,7 +52,7 @@ export const getForcastWeather = async ({ lat, lon }: Coordinates): Promise<Fore
 
 export const getReverseGeocode = async ({ lat, lon }: Coordinates): Promise<GeocodingResponse[]> => {
     const response = await geoClient.get<GeocodingResponse[]>('/reverse', {
-        params: { lat: lat.toString(), lon: lon.toString(), limit: 1 },
+        params: { lat: lat.toString(), lon: lon.toString() },
     });
     return response.data;
 };
