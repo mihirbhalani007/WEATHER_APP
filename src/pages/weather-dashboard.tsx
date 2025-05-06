@@ -1,4 +1,4 @@
-import { useForcastQuery, useReverseGeocodeQuery, useWeatherQuery } from '@/hooks/useWeather';
+import { useForcastQuery, usePollutionQuery, useReverseGeocodeQuery, useWeatherQuery } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, MapPin, RefreshCw } from 'lucide-react';
@@ -9,6 +9,7 @@ import { WeatherForecast } from '@/components/WeatherForcast';
 import WeatherSkeleton from '@/components/LoadingSkeleton';
 import useGeolocation from '@/hooks/useGeolocation';
 import { FavoriteCities } from '@/components/FavoriteCities';
+import AirPollutionChart from '@/components/AirPollutionChart';
 
 const WeatherDashboard = () => {
     const { coordinates, error: locationError, isLoading: locationLoading, getLocation } = useGeolocation();
@@ -17,6 +18,7 @@ const WeatherDashboard = () => {
     const locationQuery = useReverseGeocodeQuery(coordinates);
     const forcastQuery = useForcastQuery(coordinates);
     const weatherQuery = useWeatherQuery(coordinates);
+    const pollutionQuery = usePollutionQuery(coordinates);
 
     const locationName = locationQuery.data?.[0];
 
@@ -25,6 +27,7 @@ const WeatherDashboard = () => {
         locationQuery.refetch();
         forcastQuery.refetch();
         weatherQuery.refetch();
+        pollutionQuery.refetch();
     };
 
     if (locationError) {
@@ -57,7 +60,7 @@ const WeatherDashboard = () => {
         );
     }
 
-    if (weatherQuery.error || forcastQuery.error) {
+    if (weatherQuery.error || forcastQuery.error || pollutionQuery.error) {
         return (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -72,7 +75,8 @@ const WeatherDashboard = () => {
         );
     }
 
-    const isLoadingAll = weatherQuery.isLoading || forcastQuery.isLoading || locationQuery.isLoading || locationLoading;
+    const isLoadingAll =
+        weatherQuery.isLoading || forcastQuery.isLoading || locationQuery.isLoading || locationLoading || pollutionQuery.isLoading;
 
     if (isLoadingAll) {
         return <WeatherSkeleton />;
@@ -87,7 +91,7 @@ const WeatherDashboard = () => {
                     variant={'outline'}
                     size={'icon'}
                     onClick={handleRefresh}
-                    disabled={weatherQuery.isFetching || forcastQuery.isFetching}
+                    disabled={weatherQuery.isFetching || forcastQuery.isFetching || pollutionQuery.isFetching}
                 >
                     <RefreshCw className={`h-4 w-4 ${weatherQuery.isFetching || forcastQuery.isFetching ? 'animate-spin' : ''}`} />
                 </Button>
@@ -101,9 +105,11 @@ const WeatherDashboard = () => {
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-4">
-                    <div className="flex-1">{weatherQuery.data && <WeatherDetails data={weatherQuery.data} />}</div>
+                    {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
+
                     <div className="flex-1">{forcastQuery.data && <WeatherForecast data={forcastQuery.data} />}</div>
                 </div>
+                <div className="flex-1">{weatherQuery.data && <WeatherDetails data={weatherQuery.data} />}</div>
             </div>
         </div>
     );

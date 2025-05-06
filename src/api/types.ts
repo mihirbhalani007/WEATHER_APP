@@ -58,3 +58,4 @@ export interface GeocodingResponse {
     country: string;
     state?: string;
 }
+

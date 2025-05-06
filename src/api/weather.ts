@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_CONFIG } from './config';
-import type { Coordinates, WeatherData, ForecastData, GeocodingResponse } from './types';
+import type { Coordinates, WeatherData, ForecastData, GeocodingResponse, AirPollutionData} from './types';
 
 // weather instance
 const weatherClient = axios.create({
@@ -60,6 +60,16 @@ export const getReverseGeocode = async ({ lat, lon }: Coordinates): Promise<Geoc
 export const searchLocations = async (query: string): Promise<GeocodingResponse[]> => {
     const response = await geoClient.get<GeocodingResponse[]>('/direct', {
         params: { q: query, limit: 5 },
+    });
+    return response.data;
+};
+
+export const getAirPollution = async ({ lat, lon }: Coordinates): Promise<AirPollutionData> => {
+    const response = await weatherClient.get<AirPollutionData>('/air_pollution', {
+        params: {
+            lat: lat.toString(),
+            lon: lon.toString(),
+        },
     });
     return response.data;
 };
