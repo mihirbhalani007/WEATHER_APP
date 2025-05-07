@@ -104,9 +104,8 @@ const WeatherDashboard = () => {
                     <div className="flex-1 flex flex-col">{forcastQuery.data && <HourlyTemprature data={forcastQuery.data} />}</div>
                 </div>
 
+                {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
                 <div className="flex flex-col lg:flex-row gap-4">
-                    {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
-
                     <div className="flex-1">{forcastQuery.data && <WeatherForecast data={forcastQuery.data} />}</div>
                 </div>
                 <div className="flex-1">{weatherQuery.data && <WeatherDetails data={weatherQuery.data} />}</div>
