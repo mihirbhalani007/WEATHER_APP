@@ -73,3 +73,11 @@ export type AirPollutionData = {
     };
     dt: number;
 };
+
+export type AirPollutionResponse = {
+    coord: {
+        lon: number;
+        lat: number;
+    };
+    list: AirPollutionData[];
+};

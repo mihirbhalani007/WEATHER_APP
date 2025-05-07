@@ -49,7 +49,7 @@ export default function CityPage() {
             <div className="grid gap-6">
                 <CurrentWeather data={weatherQuery.data} />
                 <HourlyTemperature data={forecastQuery.data} />
-                <AirPollutionChart data={pollutionQuery.data.list[0]} />
+                {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
                 <div className="grid gap-6 md:grid-cols-2 items-start">
                     <WeatherDetails data={weatherQuery.data} />
                     <WeatherForecast data={forecastQuery.data} />

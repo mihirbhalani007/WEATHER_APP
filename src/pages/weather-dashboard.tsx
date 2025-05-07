@@ -20,6 +20,8 @@ const WeatherDashboard = () => {
     const weatherQuery = useWeatherQuery(coordinates);
     const pollutionQuery = usePollutionQuery(coordinates);
 
+    console.log('pollutionQuery', pollutionQuery?.data?.list[0]);
+
     const locationName = locationQuery.data?.[0];
 
     const handleRefresh = () => {
@@ -104,7 +106,8 @@ const WeatherDashboard = () => {
                     <div className="flex-1 flex flex-col">{forcastQuery.data && <HourlyTemprature data={forcastQuery.data} />}</div>
                 </div>
 
-                {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
+                {pollutionQuery.data?.list?.length ? <AirPollutionChart data={pollutionQuery.data.list[0]} /> : null}
+
                 <div className="flex flex-col lg:flex-row gap-4">
                     <div className="flex-1">{forcastQuery.data && <WeatherForecast data={forcastQuery.data} />}</div>
                 </div>

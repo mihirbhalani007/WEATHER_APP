@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_CONFIG } from './config';
-import type { Coordinates, WeatherData, ForecastData, GeocodingResponse, AirPollutionData} from './types';
+import type { Coordinates, WeatherData, ForecastData, GeocodingResponse, AirPollutionResponse } from './types';
 
 // weather instance
 const weatherClient = axios.create({
@@ -64,8 +64,8 @@ export const searchLocations = async (query: string): Promise<GeocodingResponse[
     return response.data;
 };
 
-export const getAirPollution = async ({ lat, lon }: Coordinates): Promise<AirPollutionData> => {
-    const response = await weatherClient.get<AirPollutionData>('/air_pollution', {
+export const getAirPollution = async ({ lat, lon }: Coordinates): Promise<AirPollutionResponse> => {
+    const response = await weatherClient.get<AirPollutionResponse>('/air_pollution', {
         params: {
             lat: lat.toString(),
             lon: lon.toString(),
