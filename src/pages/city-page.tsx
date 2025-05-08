@@ -1,28 +1,29 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
-import { useForcastQuery, usePollutionQuery, useWeatherQuery } from '@/hooks/useWeather';
+import { useWeatherQuery, useForcastQuery, usePollutionQuery } from '@/hooks/useWeather';
 import WeatherSkeleton from '@/components/LoadingSkeleton';
 import CurrentWeather from '@/components/CurrentWeather';
-import HourlyTemperature from '@/components/HourlyTemprature';
 import { WeatherDetails } from '@/components/WeatherDetails';
 import { WeatherForecast } from '@/components/WeatherForcast';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import AirPollutionChart from '@/components/AirPollutionChart';
+import HourlyTemperature from '@/components/HourlyTemprature';
+import AirPollutionSkeleton from '@/components/AirPollutionSkeleton';
 
 export default function CityPage() {
     const [searchParams] = useSearchParams();
     const params = useParams();
-    const lat = parseFloat(searchParams.get('lat') || '0');
-    const lon = parseFloat(searchParams.get('lon') || '0');
+    const coordinates = {
+        lat: parseFloat(searchParams.get('lat') || '0'),
+        lon: parseFloat(searchParams.get('lon') || '0'),
+    };
 
-    const coordinates = { lat, lon };
+    const { data: weatherData, error: weatherError, isLoading: weatherLoading } = useWeatherQuery(coordinates);
+    const { data: forecastData, error: forecastError, isLoading: forecastLoading } = useForcastQuery(coordinates);
+    const { data: pollutionData, isLoading: pollutionLoading } = usePollutionQuery(coordinates);
 
-    const weatherQuery = useWeatherQuery(coordinates);
-    const forecastQuery = useForcastQuery(coordinates);
-    const pollutionQuery = usePollutionQuery(coordinates);
-
-    if (weatherQuery.error || forecastQuery.error) {
+    if (weatherError || forecastError) {
         return (
             <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
@@ -31,7 +32,7 @@ export default function CityPage() {
         );
     }
 
-    if (!weatherQuery.data || !forecastQuery.data || !params.cityName) {
+    if (weatherLoading || forecastLoading || !params.cityName || !weatherData || !forecastData) {
         return <WeatherSkeleton />;
     }
 
@@ -39,20 +40,21 @@ export default function CityPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    {params.cityName}, {weatherQuery.data.sys.country}
+                    {params.cityName}, {weatherData.sys.country}
                 </h1>
-                <div className="flex gap-2">
-                    <FavoriteButton data={{ ...weatherQuery.data, name: params.cityName }} />
-                </div>
+                <FavoriteButton data={{ ...weatherData, name: params.cityName }} />
             </div>
-
             <div className="grid gap-6">
-                <CurrentWeather data={weatherQuery.data} />
-                <HourlyTemperature data={forecastQuery.data} />
-                {pollutionQuery.data?.list?.[0] && <AirPollutionChart data={pollutionQuery.data.list[0]} />}
+                <CurrentWeather data={weatherData} />
+                <HourlyTemperature data={forecastData} />
+                {pollutionLoading ? (
+                    <AirPollutionSkeleton />
+                ) : pollutionData?.list?.[0] ? (
+                    <AirPollutionChart data={pollutionData.list[0]} />
+                ) : null}
                 <div className="grid gap-6 md:grid-cols-2 items-start">
-                    <WeatherDetails data={weatherQuery.data} />
-                    <WeatherForecast data={forecastQuery.data} />
+                    <WeatherDetails data={weatherData} />
+                    <WeatherForecast data={forecastData} />
                 </div>
             </div>
         </div>

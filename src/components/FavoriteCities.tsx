@@ -23,22 +23,23 @@ function FavoriteCityTablet({ id, name, lat, lon, onRemove }: FavoriteCityTablet
         navigate(`/city/${name}?lat=${lat}&lon=${lon}`);
     };
 
+    const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        onRemove(id);
+        toast.error(`Removed ${name} from Favorites`);
+    };
+
     return (
-        <div
+        <button
+            type="button"
             onClick={handleClick}
-            className="relative flex min-w-[250px] cursor-pointer items-center gap-3 rounded-lg border bg-card p-4 pr-8 shadow-sm transition-all hover:shadow-md"
-            role="button"
-            tabIndex={0}
+            className="relative flex min-w-[250px] items-center gap-3 rounded-lg border bg-card p-4 pr-8 shadow-sm transition-all hover:shadow-md"
         >
             <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 h-6 w-6 rounded-full p-0  hover:text-destructive-foreground group-hover:opacity-100"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(id);
-                    toast.error(`Removed ${name} from Favorites`);
-                }}
+                className="absolute right-1 top-1 h-6 w-6 rounded-full p-0 hover:text-destructive-foreground"
+                onClick={handleRemove}
             >
                 <X className="h-4 w-4" />
             </Button>
@@ -47,7 +48,7 @@ function FavoriteCityTablet({ id, name, lat, lon, onRemove }: FavoriteCityTablet
                 <div className="flex h-8 items-center justify-center">
                     <Loader2 className="h-4 w-4 animate-spin" />
                 </div>
-            ) : weather ? (
+            ) : weather && weather.weather?.[0] ? (
                 <>
                     <div className="flex items-center gap-2">
                         <img
@@ -66,12 +67,16 @@ function FavoriteCityTablet({ id, name, lat, lon, onRemove }: FavoriteCityTablet
                     </div>
                 </>
             ) : null}
-        </div>
+        </button>
     );
 }
 
 export function FavoriteCities() {
     const { favorites, removeFavorite } = useFavorites();
+
+    const handleRemove = (id: string) => {
+        removeFavorite.mutate(id);
+    };
 
     if (!favorites.length) {
         return null;
@@ -83,7 +88,7 @@ export function FavoriteCities() {
             <ScrollArea className="w-full pb-4">
                 <div className="flex gap-4">
                     {favorites.map((city) => (
-                        <FavoriteCityTablet key={city.id} {...city} onRemove={() => removeFavorite.mutate(city.id)} />
+                        <FavoriteCityTablet key={city.id} {...city} onRemove={handleRemove} />
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" className="mt-2" />
