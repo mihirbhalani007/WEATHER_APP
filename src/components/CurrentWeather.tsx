@@ -1,6 +1,6 @@
 import type { WeatherData, GeocodingResponse } from '@/api/types';
 import { Card, CardContent } from './ui/card';
-import { ArrowDown, ArrowUp, Clock, Droplets, Wind } from 'lucide-react';
+import { ArrowDown, ArrowUp, Droplets } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CurrentWeatherData {
@@ -18,37 +18,31 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherData) => {
     const {
         weather: [currentWeather],
         main: { temp, feels_like, temp_min, temp_max, humidity },
-        wind: { speed },
     } = data;
 
     const formatTemp = (temp: number) => `${Math.round(temp)}°`;
 
     const getTempColor = (temp: number) => {
-        const minTemp = 10; // Minimum temperature for color scale
-        const maxTemp = 45; // Maximum temperature for color scale
+        const minTemp = 10;
+        const maxTemp = 45;
         const tempRange = maxTemp - minTemp;
 
-        // Ensure the temperature is within the range
         const tempPercentage = Math.min(Math.max((temp - minTemp) / tempRange, 0), 1);
 
-        // Define colors for the transition
-        const coldColor = { r: 0, g: 0, b: 255 }; // Blue
-        const coolColor = { r: 0, g: 255, b: 255 }; // Light Blue
-        const warmColor = { r: 255, g: 165, b: 0 }; // Orange
-        const hotColor = { r: 255, g: 0, b: 0 }; // Red
+        const coldColor = { r: 0, g: 0, b: 255 };
+        const coolColor = { r: 0, g: 255, b: 255 };
+        const warmColor = { r: 255, g: 165, b: 0 };
+        const hotColor = { r: 255, g: 0, b: 0 };
 
         let color;
 
-        // Interpolate between colors based on temperature percentage
         if (tempPercentage <= 0.25) {
-            // Blue to Light Blue
             color = {
                 r: coldColor.r + (coolColor.r - coldColor.r) * (tempPercentage / 0.25),
                 g: coldColor.g + (coolColor.g - coldColor.g) * (tempPercentage / 0.25),
                 b: coldColor.b + (coolColor.b - coldColor.b) * (tempPercentage / 0.25),
             };
         } else if (tempPercentage <= 0.5) {
-            // Light Blue to Orange
             const adjustedPercentage = (tempPercentage - 0.25) / 0.25;
             color = {
                 r: coolColor.r + (warmColor.r - coolColor.r) * adjustedPercentage,
@@ -56,7 +50,6 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherData) => {
                 b: coolColor.b + (warmColor.b - coolColor.b) * adjustedPercentage,
             };
         } else if (tempPercentage <= 0.75) {
-            // Orange to Red
             const adjustedPercentage = (tempPercentage - 0.5) / 0.25;
             color = {
                 r: warmColor.r + (hotColor.r - warmColor.r) * adjustedPercentage,
@@ -64,7 +57,6 @@ const CurrentWeather = ({ data, locationName }: CurrentWeatherData) => {
                 b: warmColor.b + (hotColor.b - warmColor.b) * adjustedPercentage,
             };
         } else {
-            // Red (fully hot)
             color = hotColor;
         }
 
