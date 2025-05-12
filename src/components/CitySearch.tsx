@@ -49,9 +49,6 @@ const CitySearch = () => {
                 <CommandInput placeholder="Search Cities..." value={query} onValueChange={setQuery} />
                 <CommandList>
                     {query.length > 2 && !isLoading && <CommandEmpty>No results found.</CommandEmpty>}
-                    {/* <CommandGroup heading="Favorites">
-                        <CommandItem>Calendar</CommandItem>
-                    </CommandGroup> */}
 
                     {history.length > 0 && (
                         <>
