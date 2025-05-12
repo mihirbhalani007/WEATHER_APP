@@ -1,6 +1,6 @@
 'use client';
 
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis } from 'recharts';
 import { format } from 'date-fns';
 
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -18,7 +18,6 @@ interface ChartData {
     feels_like: number;
 }
 
-// ✅ Config aligned with actual data keys
 const chartConfig = {
     temp: {
         label: 'Temperature',
